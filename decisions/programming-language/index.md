@@ -78,7 +78,7 @@ Furthermore, Jupyter Notebook (the status quo) are usually written with Python, 
 
 We will aim toward ecosystem choices that align with Python.
 
-The `framework-prediction-api` is fully impacted by this decision.
+The [`framework-prediction-api`](../framework-prediction-api/index.md#summary) is fully impacted by this decision.
 
 
 ## Notes
