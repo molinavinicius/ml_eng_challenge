@@ -1,0 +1,7 @@
+fastapi
+gunicorn
+pandas
+pypyr
+python-dotenv
+uvicorn
+joblib
