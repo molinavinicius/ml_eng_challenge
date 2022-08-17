@@ -5,3 +5,5 @@ pypyr
 python-dotenv
 uvicorn
 joblib
+jupyter
+scikit-learn
