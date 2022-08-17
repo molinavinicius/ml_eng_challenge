@@ -11,8 +11,7 @@ class Payload(BaseModel):
     imacec: Imacec
     ventas: Ventas
     
-class ModelInput(BaseModel):
-    payload: Union[Payload, List[Payload]]
+ModelInput = Union[Payload, List[Payload]]
     
 class PredictionOutput(BaseModel):
-    prediction: float
+    predictions: List[float]

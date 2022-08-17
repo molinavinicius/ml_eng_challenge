@@ -8,7 +8,7 @@ class Precipitaciones(BaseModel):
     Maule: float
     Biobio: float
     La_Araucania: float
-    Los_Rio: float    
+    Los_Rios: float    
 
 
 class PIB(BaseModel):
@@ -42,15 +42,15 @@ class PIB(BaseModel):
     PIB: int
     
 class Imacec(BaseModel):
-    Imacec_empalmado: int
-    Imacec_produccion_de_bienes: int
-    Imacec_minero: int
-    Imacec_industria: int
-    Imacec_resto_de_bienes: int
-    Imacec_comercio: int
-    Imacec_servicios: int
-    Imacec_a_costo_de_factores: int
-    Imacec_no_miner: int
+    Imacec_empalmado: float
+    Imacec_produccion_de_bienes: float
+    Imacec_minero: float
+    Imacec_industria: float
+    Imacec_resto_de_bienes: float
+    Imacec_comercio: float
+    Imacec_servicios: float
+    Imacec_a_costo_de_factores: float
+    Imacec_no_minero: float
 
 class Ventas(BaseModel):
-    num: int
+    num: float
