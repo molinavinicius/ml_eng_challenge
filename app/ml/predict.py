@@ -3,9 +3,14 @@ from pathlib import Path
 import joblib
 import json
 import pandas as pd
+import numpy as np
 from fastapi.encoders import jsonable_encoder
+from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
 
-from ..core.schemas import ModelInput, PredictionOutput
+from ..core.schemas.schemas import Payload
+
+from ..core.schemas import ModelInput, Evaluation, EvaluationOutput
+from typing import Union, List
 
 from . import encoders
 
@@ -39,8 +44,10 @@ class AIModel:
     
     def __prepare_payload_for_input(self, payload:ModelInput):
 
-        if not isinstance(payload, list):
-            payload = [payload]
+        # if not isinstance(payload, list):
+        #     payload = [payload]
+        
+        payload = np.array(payload).flatten().tolist()
 
         for idx, elem in enumerate(payload):
             elem = jsonable_encoder(elem)
@@ -60,7 +67,32 @@ class AIModel:
         prediction = model.predict(model_input)
 
         if encode_to_json:
-            results = encoders.encode_to_json(prediction)
+            prediction = encoders.encode_to_json(prediction)
         
-        return results
+        return prediction
+    
+    def evaluate(self, eval:Union[Evaluation, List[Evaluation]], encode_to_json=True):
+        evals = np.array(eval).flatten().tolist()
+        payload = [e.payload for e in evals]
+        real_value = [e.real for e in evals]
+        predicted = self.predict(payload)
+        
+        metrics = {
+            "rmse": mean_squared_error(real_value, predicted),
+            'rmae': mean_absolute_error(real_value, predicted),
+        }
+        if len(predicted) >= 2:
+            metrics["r2"] = r2_score(real_value, predicted)
+            
+        result = EvaluationOutput(
+            real = real_value,
+            predicted = predicted,
+            metrics = metrics
+        )
+        # if encode_to_json:
+        #     return encoders.encode_to_json(result)
+
+        return result
+        
+        
         

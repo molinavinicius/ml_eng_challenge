@@ -7,7 +7,6 @@ from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 
 from .core import (
-    models, 
     schemas, 
     settings
 )
@@ -32,6 +31,12 @@ def make_prediction(payload:schemas.ModelInput) -> schemas.PredictionOutput:
     global AI_MODEL
     prediction = AI_MODEL.predict(payload)
     return schemas.PredictionOutput(predictions=prediction)
+
+@app.post("/evaluation") 
+def make_evaluation(payload:Union[schemas.Evaluation, List[schemas.Evaluation]]) -> schemas.EvaluationOutput:
+    global AI_MODEL
+    evaluation = AI_MODEL.evaluate(payload)
+    return evaluation
   
 # @app.get("/prediction") 
 # def read_index(params):
