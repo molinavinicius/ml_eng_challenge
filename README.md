@@ -7,24 +7,36 @@ Well, if you live in Chile, and you accept a mathematical model that predicts ba
 
 Joking aside, this repo contains a demonstration of a way of taking predictive models into a production environment.
 
+## Contents:
+
+* [Details](#details)
+  * [Assumptions](#assumptions)
+  * [Constraints](#constraints)
+  * [Positions](#positions)
+  * [Argument](#argument)
+* [Notes](#notes)
+
+
 # Considerations
 
-Let's start with what I couldn't achieve in an available time:
+### I couldn't make it in time
 
 * **Connect CassandraDB to the API:** I wanted to connect the database to the API so I could save all predictions and evaluations, so I could have better monitoring of my model
 * **Logging system:** I didn't implement a very robust logging system.
 * **GET routes:** as I didn't connect the database to the API, I couldn't enable the GET routes.
 * **Experimental dashboard:** I found a very cool repo, [Optuna](https://github.com/optuna/optuna), which is an automatic hyperparameter optimization software framework, particularly designed for machine learning.
 
-Could be better:
+### I believe there is room for improvement
 
 * **Pipelines dynamics:** I had some trouble configuring the pipelines, I think it is possible to improve the code organization, so it becomes more modularized and reusable.
 * **Async tasks:** I couldn't manage how to create async tasks. My goal was to return the model_uuid in the `/models/train` route, so the user could get the model metadata later with the UUID.
 
-Well, what this repo implements well:
+### I did it very well!
 
 * **Fast predictions:** Is very quick to make a new prediction.
 * **Evaluations:** with the evaluation route, it is possible to check how the model is performing, and save more data that can be used in model training in the future.
+* **Code modularity:** Although there is room for improvement on pipelines building, the overall application is well organized, and easy to increment and evolve.
+* **Technology choices:** The technologies chosen for building the application are highly scalable and performant. They are recent technologies that have gained high adherence from the community for their great qualities. I had never used them for this purpose before, so I consider it a VERY cool experience.
 
 ---
 
@@ -81,3 +93,21 @@ When the application starts it needs two things: the current model and a trainin
 When making a `POST` request to the endpoint `/predictions`, the `AIModel` instance transforms the input data into a format that is expected by the model and then makes a prediction.
 
 The endpoint `evaluations` uses the `AIModel.predict` function, and then compares the result with the expected values. With this, the instance can calculate metrics of interest. 
+
+About the training pipeline, there is a class `TrainPipeline`, inside `.app/ml/pipeline/pipe.py`. This class instanciate a `DataLoader` that loads all the data from the csv files. In the future, the loader can be replaced by an interface with a better database, connected to a web scrapper service, for example.
+
+After loading the data, a dict containing the dataframes will be returned, following the format:
+
+```Python
+loader_return = {
+    'precio_leche': pd.DataFrame(precio_leche),
+    'banco_central': pd.DataFrame(banco_central),
+    'precipitaciones': pd.DataFrame(precipitaciones)
+}
+```
+
+The `TrainPipeline` instance also loads another class `Preprocessor`, which has one preprocessor function for each dataframe. **The name of the .csv file impact on this, because the name of the file maps to the correct preprocessor function.**
+
+There is a method called `clean` on the Preprocessor class, which return a cleaned training data (`X`) and a target vector (`y`). This data can then be transmited to the `model_training` function, which will search for the best hyperparameters. Is in this function that I would like to implement Optuna.
+
+After training, the model updates the `models_registry` at the models store, so it becomes the current model. In this step, there is an improment to make: check with a validation class the model performance, to decide wheter to make it the current model or not. And other improvement is to save togheter with the `model.pkl` file, a `metadata.json` file, containing information about the training dataset and model metrics on training.

@@ -7,8 +7,6 @@ Contents:
   * [Decision](#decision)
   * [Status](#status)
 * [Details](#details)
-  * [Assumptions](#assumptions)
-  * [Constraints](#constraints)
   * [Positions](#positions)
   * [Argument](#argument)
 * [Notes](#notes)
@@ -24,26 +22,14 @@ We need to choose a framework for building the predection API.
 
 ### Decision
 
-So far, I am choosing FastAPI.
+I am choosing FastAPI.
 
 
 ### Status
 
-Open. 
-
+Decided. 
 
 ## Details
-Studying it so far.
-
-
-### Assumptions
-Studying it so far.
-
-
-### Constraints
-Studying it so far.
-
-
 
 ### Positions
 
