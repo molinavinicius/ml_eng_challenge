@@ -7,15 +7,6 @@ Well, if you live in Chile, and you accept a mathematical model that predicts ba
 
 Joking aside, this repo contains a demonstration of a way of taking predictive models into a production environment.
 
-## Contents:
-
-* [Details](#details)
-  * [Assumptions](#assumptions)
-  * [Constraints](#constraints)
-  * [Positions](#positions)
-  * [Argument](#argument)
-* [Notes](#notes)
-
 
 # Considerations
 
