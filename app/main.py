@@ -13,6 +13,7 @@ from .core import (
 )
 
 from .ml import predict as ai
+from .ml import pipeline as pipe
 
 app = FastAPI()
 
@@ -27,7 +28,7 @@ AI_MODEL = None
 def on_startup():
     global AI_MODEL, PIPELINE
     AI_MODEL = ai.AIModel(MODEL_STORE_DIR)
-    # PIPELINE = pipe.TrainPipeline(DATASETS_DIR)
+    PIPELINE = pipe.TrainPipeline(DATASETS_DIR, MODEL_STORE_DIR)
 
 @app.post("/prediction") 
 def make_prediction(payload:schemas.ModelInput) -> schemas.PredictionOutput:
@@ -41,15 +42,18 @@ def make_evaluation(payload:Union[schemas.Evaluation, List[schemas.Evaluation]])
     evaluation = AI_MODEL.evaluate(payload)
     return evaluation
 
-# @app.post("/models/train") 
-# async def train_new_model():
-#     global PIPELINE
-#     new_model_uuid = uuid1()
-#     await PIPELINE.train(new_model_uuid)
-#     return {
-#         "model_uuid": new_model_uuid,
-#         "message": "model training started"
-#     }
+# TODO: return a response before finish training
+@app.post("/models/train") 
+async def train_new_model():
+    global PIPELINE
+    new_model_uuid = uuid1()
+    print(str(new_model_uuid))
+    metrics = PIPELINE.train(str(new_model_uuid))
+    print(metrics)
+    return {
+        "model_uuid": new_model_uuid,
+        "message": "model training started",
+    }
   
 
 # @app.get("/prediction") 

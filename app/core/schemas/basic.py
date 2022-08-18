@@ -53,4 +53,4 @@ class Imacec(BaseModel):
     Imacec_no_minero: float
 
 class Ventas(BaseModel):
-    num: float
+    Indice_de_ventas_comercio_real_no_durables_IVCM: float

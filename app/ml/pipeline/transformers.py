@@ -45,9 +45,6 @@ class DateTransformer( BaseEstimator, TransformerMixin ):
     def get_month( self, datetime ):
         return datetime.month
 
-         
-
-    
     def transform(self, X:pd.DataFrame , y = None ):
         # locale.setlocale(locale.LC_TIME)#, self._locale)
         if not self._in_place:

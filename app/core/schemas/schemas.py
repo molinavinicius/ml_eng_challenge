@@ -4,8 +4,8 @@ from typing import List, Union, Dict
 from .basic import Precipitaciones, PIB, Imacec, Ventas
 
 class Payload(BaseModel):
-    ano: int
-    mes: int
+    year: int
+    month: int
     precipitaciones: Precipitaciones
     pib: PIB
     imacec: Imacec

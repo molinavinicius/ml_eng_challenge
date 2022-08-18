@@ -1,7 +1,7 @@
 import pandas as pd
 
 from sklearn.pipeline import  Pipeline 
-from transformers import DropEmptyData, FeatureSelector, DateTransformer, NumericalTransformer
+from .transformers import DropEmptyData, FeatureSelector, DateTransformer, NumericalTransformer
 
 def preprocess_precipitaciones(X):
     precipitaciones = DateTransformer().transform(X)
@@ -10,7 +10,7 @@ def preprocess_precipitaciones(X):
 def preprocess_precio_leche(X):
     X.rename(columns = {'Anio': 'year'}, inplace = True)
     DateTransformer(use_dates=['month'], drop_duplicates=False, date_column='Mes', format='%b').transform(X)
-    return X
+    return X.drop(columns=['Mes'])
 
 def preprocess_banco_central(X):
     imacec_ventas_pipe = Pipeline(
@@ -66,7 +66,7 @@ class Preprocessor():
             cleaned.append(self._preprocessors[name](self._dataframes[name]))
         
         dff = cleaned[0]
-        for idx, _ in enumerate(cleaned, 1):
-            dff = pd.merge(dff, cleaned[idx], on = ['month', 'year'], how = 'inner')
-            
+        for df in cleaned[1:]:
+            dff = pd.merge(dff, df, on = ['month', 'year'], how = 'inner')
+        
         return dff.drop(columns=['Precio_leche']), dff['Precio_leche']
