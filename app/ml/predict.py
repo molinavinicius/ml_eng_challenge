@@ -2,12 +2,11 @@ from dataclasses import dataclass
 from pathlib import Path
 import joblib
 import json
+import os
 import pandas as pd
 import numpy as np
 from fastapi.encoders import jsonable_encoder
 from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
-
-from ..core.schemas.schemas import Payload
 
 from ..core.schemas import ModelInput, Evaluation, EvaluationOutput
 from typing import Union, List
@@ -24,10 +23,11 @@ class AIModel:
     
     def __post_init__(self):
         if self.MODEL_STORE_DIR.exists():
+            # models = next(os.walk(self.MODEL_STORE_DIR))[1]
+            # print('available models:',models)
             MODEL_REGISTRY_PATH = self.MODEL_STORE_DIR/"model_registry.json"
             if MODEL_REGISTRY_PATH.name.endswith("json"):
                 model_registry = json.loads(MODEL_REGISTRY_PATH.read_text())
-                print(model_registry)
                 MODEL_DIR = self.MODEL_STORE_DIR/model_registry['current']
                 if MODEL_DIR.exists():
                     self.model = joblib.load(MODEL_DIR/'model.pkl')
@@ -43,9 +43,6 @@ class AIModel:
         return self.metadata
     
     def __prepare_payload_for_input(self, payload:ModelInput):
-
-        # if not isinstance(payload, list):
-        #     payload = [payload]
         
         payload = np.array(payload).flatten().tolist()
 
@@ -71,7 +68,7 @@ class AIModel:
         
         return prediction
     
-    def evaluate(self, eval:Union[Evaluation, List[Evaluation]], encode_to_json=True):
+    def evaluate(self, eval:Union[Evaluation, List[Evaluation]]):
         evals = np.array(eval).flatten().tolist()
         payload = [e.payload for e in evals]
         real_value = [e.real for e in evals]
@@ -89,8 +86,6 @@ class AIModel:
             predicted = predicted,
             metrics = metrics
         )
-        # if encode_to_json:
-        #     return encoders.encode_to_json(result)
 
         return result
         

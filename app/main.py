@@ -5,6 +5,7 @@ import pathlib
 from typing import Optional, List, Union
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
+from uuid import uuid1
 
 from .core import (
     schemas, 
@@ -17,14 +18,16 @@ app = FastAPI()
 
 BASE_DIR = pathlib.Path(__file__).resolve().parent
 MODEL_STORE_DIR = BASE_DIR.parent / "models_store"
+DATASETS_DIR = BASE_DIR.parent / "datasets/raw"
 
+PIPELINE = None
 AI_MODEL = None
 
 @app.on_event("startup")
 def on_startup():
-    global AI_MODEL
-    print(MODEL_STORE_DIR)
+    global AI_MODEL, PIPELINE
     AI_MODEL = ai.AIModel(MODEL_STORE_DIR)
+    # PIPELINE = pipe.TrainPipeline(DATASETS_DIR)
 
 @app.post("/prediction") 
 def make_prediction(payload:schemas.ModelInput) -> schemas.PredictionOutput:
@@ -37,7 +40,18 @@ def make_evaluation(payload:Union[schemas.Evaluation, List[schemas.Evaluation]])
     global AI_MODEL
     evaluation = AI_MODEL.evaluate(payload)
     return evaluation
+
+# @app.post("/models/train") 
+# async def train_new_model():
+#     global PIPELINE
+#     new_model_uuid = uuid1()
+#     await PIPELINE.train(new_model_uuid)
+#     return {
+#         "model_uuid": new_model_uuid,
+#         "message": "model training started"
+#     }
   
+
 # @app.get("/prediction") 
 # def read_index(params):
 #     global AI_MODEL
